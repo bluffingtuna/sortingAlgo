@@ -1,6 +1,7 @@
 var swap = require("./swap");
 var Benchmark = require("benchmark");
 var test = new Benchmark.Suite;
+var merge = require("./merge")
 
 function bubbleSort(array) {
 	for (var i=array.length; i>0; i--){
@@ -50,12 +51,55 @@ function insertionSort1(arr){
 	return arr;
 }
 
-let arr2 = [4,2,6,4,12,5,3,12,6,8888,123,344,34,555,2123,45,2135,316426,5569,34156,57347,2124, 1232,1254125,4,24,123123,1251235,1243213,123123]
+function mergesort(arr){
+	if (arr.length<2){
+		return arr
+	}
+	var mid = Math.floor(arr.length/2),
+		left = arr.slice(0, mid),
+		right = arr.slice(mid);
 
+	return merge(
+		mergesort(left),
+		mergesort(right)
+	);
+}
 
-test.add("bubblesort", function(){
-			bubbleSort(arr2);
-		})
+function mergesort1(arr){
+	if (arr.length<2){
+		return arr
+	}
+
+	var left = arr.splice(0, Math.floor(arr.length/2));
+	var right = arr.splice(0, arr.length);
+
+	return merge(
+		mergesort1(left),
+		mergesort1(right)
+	);
+}
+
+function mergesortIterative(arr) {
+	if (arr.length <2) {return arr;}
+
+	var work=[];
+	for (var i =0; i<arr.length; i++){
+		work.push([arr[i]]);
+	}
+
+	while (work.length>1){
+		var left= work.shift();
+		var right= work.shift();
+		work.push(merge(left,right));
+	}
+	return work[0];
+}
+arr2=[]
+console.log(bubbleSort(arr2))
+
+test.add("mergeinterative", function(){
+			mergesortIterative(arr2);
+	})
 	.add("selectionsort", function(){
 		selectionSort(arr2);
 	})
@@ -65,6 +109,15 @@ test.add("bubblesort", function(){
 	.add("insertionsort1", function(){
 		insertionSort1(arr2);
 	})
+	.add("bubblesort", function(){
+			bubbleSort(arr2);
+		})
+	.add("mergesort", function(){
+			mergesort(arr2);
+	})
+	.add("mergesort1", function(){
+			mergesort1(arr2);
+	})
 	.add()
 	.on("cycle", function(event) {
 		console.log(String(event.target));
@@ -72,4 +125,4 @@ test.add("bubblesort", function(){
 	.on("complete", function(){
 		console.log("Fastest is "+ this.filter("fastest").map("name"));
 	})
-	.run({"async":true})
+	.run({"async":false})
