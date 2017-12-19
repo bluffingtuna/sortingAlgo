@@ -96,6 +96,7 @@ function mergesortIterative(arr) {
 }
 arr2=[]
 console.log(bubbleSort(arr2))
+//benchmark might not work on with this setting. for somereason selection sort is much faster the other
 
 test.add("mergeinterative", function(){
 			mergesortIterative(arr2);
